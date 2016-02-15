@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Snake test</title>
+    <script type="text/javascript" src='../jquery-2.1.4/jquery.min.js'>
+    </script>
+
+    <style media="screen">
+
+    #d1{
+      height: 442px;
+    }
+    input{
+      text-align: center;
+    }
+    body {
+      background: #3C3C3C
+    }
+    .d2{width: 100%}
+    button {
+      display:inline;
+    }
+    #b1{
+      margin-left: 40%;
+    }
+    p{
+      margin: 15px;
+      text-align: center;
+      color: White
+    }
+    td { width: 18px; height: 18px ;padding: 1px ;border:0px solid #eee; background:#f4f4f4}
+
+    table {
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+      background : White}
+    </style>
+  </head>
+
+  <body>
+
+    <div class="d2">
+      <button type="button"  id='b1' >Start</button>
+      <button type="button" id='b2'>Replay</button>
+
+    </div>
+    <div class="d3">
+      <p id='p1'>
+        Smart Snake
+      </p>
+    </div>
+
+<div id='d1'>
+
+</div>
+<div class="d4">
+  <p id='p2'>
+    Welcome
+  </p>
+</div>
+  </body>
+  <script type="text/javascript">
+  var WIDTH=400,HEIGHT=400;
+  var BLOCK_WIDTH = 20;
+  //var text1=['Scored!!','Nice!','Well Play~~','Wonderful','WoW~'];
+  var timer;
+  var initSpeed=275;
+  var have_eat=false;
+  var grade=0;
+  var level=0;
+  var speedline = [1,2,3,5,8,13,21,34,55];
+
+  //grid二维数组
+  var gridbox=new Array(HEIGHT/BLOCK_WIDTH);
+  for (var i = 0; i < HEIGHT/BLOCK_WIDTH; i++) {
+    gridbox[i]=new Array(WIDTH/BLOCK_WIDTH);
+  }
+//
+
+// Grid init
+function initGrid() {
+  var d1=document.getElementById('d1');
+  var table = document.createElement('table');
+  for (var i = 0; i < HEIGHT/BLOCK_WIDTH; i++) {
+    var tr = document.createElement('tr');
+    tr.id= 'r'+i;
+    for (var j = 0; j <WIDTH/BLOCK_WIDTH; j++) {
+      var td = document.createElement('td');
+      //td.id= 'r'+i+'c'+j;
+      gridbox[i][j]=td;
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  d1.appendChild(table);
+}
+// button test
+$(function(){
+  $('#b1').click(function(){
+
+    StartPlay();
+
+  });
+  $('#b2').click(function () {
+    window.location.reload();
+  })
+})
+//
+function Compare(a1,b2) {
+  for (var i = 0; i < b2.length; i++) {
+    if(i==0)
+      continue;
+    if(b2[i][0]==a1[0]){
+      if (b2[i][1]==a1[1]) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+//
+function gridset(a,b,color) {
+  gridbox[a][b].style.background = color;
+}
+//
+function randowNum(max) {
+  return Math.round(Math.random()*max);
+}
+
+function randomXY(MaxX,MaxY) {
+  var a =Array(Math.round(Math.random()*MaxX),Math.round(Math.random()*MaxY));
+  for (var i = 0; i < s1.body.length; i++)
+  {
+    if (Compare(a,s1.body[i]))
+        return randomXY(MaxX,MaxY);
+  }
+
+  return a;
+}
+//
+window.onload=Init();
+// Start
+function StartPlay() {
+  if (timer)
+    clearInterval(timer);
+  timer=setInterval('run()',initSpeed);
+}
+//
+function run() {
+  try{
+  s1.move();
+  $('#p1').text('Grade: '+grade*50);
+  }
+  catch(err){
+    if (err instanceof TypeError)
+    {
+      console.log(err.name+':'+err.message);
+      clearInterval(timer);
+      $('#p2').text('You Hit the Wall!! hhh~~');
+      alert('Game Over!err_move');
+    }
+
+  }
+  finally{
+
+  }
+
+//  if(have_eat)
+  //  f1.draw();
+}
+// init
+function Init() {
+  initGrid();
+  s1= new Snake();
+  s1.draw();
+  f1=new Food();
+  f1.draw();
+}
+//food
+function Food() {
+  this.color='#FFD700';
+  this.x;
+  this.y;
+
+  this.draw= function () {
+    var a=randomXY(HEIGHT/BLOCK_WIDTH-1,WIDTH/BLOCK_WIDTH-1);
+    this.x=a[0];
+    this.y=a[1];
+  //
+  //  console.log([this.x,this.y]);
+
+    gridset(this.x,this.y,this.color);
+    gridbox[this.x][this.y].id='food';
+    //have_eat=false;
+  }
+
+  this.clean= function () {
+    gridbox[this.x][this.y].id='';
+  }
+
+}
+// snake init
+function Snake() {
+  this.color= '#1E90FF';
+  this.bgcolor='#f4f4f4';
+  this.body= new Array([2,4],[2,3],[2,2]);
+  this.direct='right';
+
+  this.draw=function () {
+    for (var i = 0; i < this.body.length; i++) {
+      gridset(this.body[i][0],this.body[i][1],this.color);
+      gridbox[this.body[i][0]][this.body[i][1]].className='body';
+    }
+  }
+
+  this.move=function () {
+    var len = this.body.length-1;
+    // body follow
+
+    for (var i = 0; i < len; i++) {
+      gridset(this.body[i][0],this.body[i][1],this.color);
+      gridbox[this.body[i][0]][this.body[i][1]].className='body';
+    }
+    for (var i = len; i >0 ; i--) {
+
+      if (i==len) {
+      //  if(have_eat)
+        //  gridset(this.body[len][0],this.body[len][1],this.color);
+        //else
+          gridset(this.body[len][0],this.body[len][1],this.bgcolor);
+
+        //tail clean
+
+        gridbox[this.body[len][0]][this.body[len][1]].className='';
+      }
+      this.body[i][0]=this.body[i-1][0];
+      this.body[i][1]=this.body[i-1][1];
+    }
+
+    // head move
+    switch (this.direct) {
+      case 'right':
+        gridset(this.body[0][0],this.body[0][1]+1,this.color);
+        this.body[0][1]+=1;
+        break;
+      case 'left':
+        gridset(this.body[0][0],this.body[0][1]-1,this.color);
+        this.body[0][1]-=1;
+        break;
+      case 'up':
+        gridset(this.body[0][0]-1,this.body[0][1],this.color);
+        this.body[0][0]-=1;
+        break;
+      case 'down':
+        gridset(this.body[0][0]+1,this.body[0][1],this.color);
+        this.body[0][0]+=1;
+      break;
+    }
+
+    gridbox[this.body[0][0]][this.body[0][1]].className='body';
+
+    this.detect();
+  }
+
+  this.detect=function () {
+// eat food detect
+
+    if (gridbox[this.body[0][0]][this.body[0][1]].id=='food') {
+      //console.log('eat!');
+      s1.body.push([s1.body[this.body.length-1][0],s1.body[this.body.length-1][1]]);
+      gridbox[s1.body[this.body.length-1][0]][s1.body[this.body.length-1][1]].className='body';
+    //  have_eat=true;
+
+      f1.clean();
+      grade +=1;
+      if(grade==speedline[level])
+      {
+
+        initSpeed -= Math.round( 70/Math.sqrt( speedline[level]));
+        level++;
+      }
+
+
+
+      clearInterval(timer);
+      timer=setInterval('run()',initSpeed);
+
+    //  console.log(initSpeed);
+      f1.draw();
+    }
+    //grade effect the speed
+
+//  border detect
+//implenmet by  try catch
+
+//self hit detect
+    if (Compare(s1.body[0],s1.body)) {
+      clearInterval(timer);
+      $('#p2').text('You killed yourself!!hhh~~');
+      alert("Game Over!hit_self ");
+      //console.log('hit!');
+    }
+    //key controll
+    $(document).keydown(function(e){
+      switch (e.keyCode) {
+        case 38||87:
+          s1.direct= s1.direct=='down'?'down':'up';
+          break;
+        case 39||68:
+          s1.direct= s1.direct=='left'?'left':'right';
+          break;
+        case 40||83:
+          s1.direct=s1.direct=='up'?'up':'down';
+          break;
+        case 37||65:
+          s1.direct=s1.direct=='right'?'right':'left';
+          break;
+        default:
+        break;
+      }
+    })
+  }
+}
+
+  </script>
+</html>
