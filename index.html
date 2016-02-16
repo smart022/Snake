@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Snake test</title>
-    <script type="text/javascript" src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js">
+    <script type="text/javascript" src='../jquery-2.1.4/jquery.min.js'>
     </script>
 
     <style media="screen">
@@ -66,7 +66,7 @@
 </div>
   </body>
   <script type="text/javascript">
-  var WIDTH=400,HEIGHT=400;
+  var WIDTH=600,HEIGHT=400;
   var BLOCK_WIDTH = 20;
   //var text1=['Scored!!','Nice!','Well Play~~','Wonderful','WoW~'];
   var timer;
@@ -101,7 +101,7 @@ function initGrid() {
   d1.appendChild(table);
 }
 // button test
-$(document).ready(function(){
+$(function(){
   $('#b1').click(function(){
 
     StartPlay();
@@ -129,16 +129,10 @@ function gridset(a,b,color) {
   gridbox[a][b].style.background = color;
 }
 //
-function randowNum(max) {
-  return Math.round(Math.random()*max);
-}
-
 function randomXY(MaxX,MaxY) {
   var a =Array(Math.round(Math.random()*MaxX),Math.round(Math.random()*MaxY));
-  for (var i = 0; i < s1.body.length; i++)
-  {
-    if (Compare(a,s1.body[i]))
-        return randomXY(MaxX,MaxY);
+  if (gridbox[a[0]][a[1]].className=='body') {
+    return randomXY(MaxX,MaxY);
   }
 
   return a;
